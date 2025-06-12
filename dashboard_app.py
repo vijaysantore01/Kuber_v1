@@ -46,7 +46,7 @@ try:
         with open("upstox_v2_token.txt", "w") as f:
             f.write("DUMMY_UPSTOX_TOKEN")
 
-    from Kuber_nifty_version1 import (
+    from Kuber_1206_All_V1 import (
         get_spot_price, get_nearest_expiry, get_oi_data, filter_strikes_near_spot,
         calculate_option_skew, calculate_pcr, calculate_max_pain, get_live_premium,
         final_suggestion_extended, get_dashboard_data,
