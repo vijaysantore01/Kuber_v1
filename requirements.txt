@@ -24,6 +24,7 @@ hyperlink
 idna
 isodate
 itsdangerous
+nsetools
 Jinja2
 jsonschema
 jsonschema-specifications

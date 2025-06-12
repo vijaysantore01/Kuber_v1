@@ -7,7 +7,8 @@ import yfinance as yf
 import json  # Keeping if you use it elsewhere
 from twilio.rest import Client
 from typing import Union
-from nsepython import nsefetch, nse_optionchain_scrapper, index_history
+from nsepython import nsefetch, nse_optionchain_scrapper, index_history # Keep these for other functions
+from nsetools import Nse # NEW: Import nsetools for spot price
 
 # --- GLOBAL CONFIGURATION AND INITIALIZATION ---
 logging.basicConfig(level=logging.INFO,  # Set to logging.DEBUG for very detailed logs
@@ -239,6 +240,7 @@ def clear_screen():
 
 
 def get_nearest_expiry(sym: str) -> Union[str, None]:
+    # This function uses nsepython, which seems okay for expiry data on Render
     logging.info(f"[get_nearest_expiry] Called with sym: {sym}")
     try:
         oc = nse_optionchain_scrapper(sym)
@@ -256,22 +258,37 @@ def get_nearest_expiry(sym: str) -> Union[str, None]:
 
 def get_spot_price(sym: str):
     logging.info(f"[get_spot_price] Called with sym: {sym}")
+    nse = Nse() # Initialize Nse object
+
+    # Primary attempt: nsetools get_index_quote
+    try:
+        # nsetools get_index_quote for NIFTY 50
+        index_quote = nse.get_index_quote("NIFTY 50")
+        if index_quote and 'last' in index_quote:
+            price = float(index_quote['last'])
+            logging.info(f"✅ NIFTY spot price fetched from nsetools: {price}")
+            return price
+        logging.warning("[get_spot_price] nsetools did not return valid spot price. Trying nsepython fallback.")
+    except Exception as e:
+        logging.warning(f"[get_spot_price] nsetools error: {e}. Trying nsepython fallback.", exc_info=True)
+
+    # Fallback to nsepython.nsefetch (original primary)
     try:
         data = nsefetch("https://www.nseindia.com/api/equity-stockIndices?index=NIFTY%2050")
-        logging.debug(f"[get_spot_price] nsefetch result: {data}")
         if data and 'data' in data and data['data']:
             price = float(data['data'][0]['lastPrice'])
-            logging.info(f"[get_spot_price] Price from nsefetch: {price}")
+            logging.info(f"✅ NIFTY spot price fetched from nsepython (nsefetch fallback).")
             return price
-        logging.warning("[get_spot_price] nsefetch did not return valid spot price. Trying fallback.")
+        logging.warning("[get_spot_price] nsepython nsefetch fallback did not return valid spot price. Trying nse_optionchain_scrapper fallback.")
     except Exception as e:
-        logging.warning(f"[get_spot_price] nsefetch error: {e}. Trying fallback.", exc_info=True)
+        logging.warning(f"[get_spot_price] nsepython nsefetch fallback error: {e}. Trying nse_optionchain_scrapper fallback.", exc_info=True)
+
+    # Fallback to nsepython.nse_optionchain_scrapper (original secondary fallback)
     try:
         oc = nse_optionchain_scrapper(sym)
-        logging.debug(f"[get_spot_price] Fallback option chain: {type(oc)}")
         if oc and "records" in oc and "underlyingValue" in oc["records"]:
             price = float(oc["records"]["underlyingValue"])
-            logging.info(f"[get_spot_price] Price from fallback: {price}")
+            logging.info(f"✅ NIFTY spot price fetched from nse_optionchain_scrapper fallback: {price}")
             return price
         logging.error("[get_spot_price] All fallbacks failed. Returning 0.0.")
         return 0.0

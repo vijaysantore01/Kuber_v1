@@ -1,13 +1,15 @@
 import streamlit as st  # st MUST be imported first for set_page_config
 import time
+import pandas_ta as ta
 import pandas as pd
 import logging
 import sys
 import os
+from typing import Union
 from pandas.api.types import is_scalar
 
 # --- Streamlit UI Configuration (MUST BE THE FIRST STREAMLIT COMMAND) ---
-st.set_page_config(layout="wide", page_title="NIFTY Bot Dashboard")
+st.set_page_config(layout="wide", page_title="NIFTY Bot Real-time Dashboard")
 
 # --- Laxmi Kuber Mantra (Added at the very top) ---
 st.markdown(
@@ -50,10 +52,10 @@ try:
         get_spot_price, get_nearest_expiry, get_oi_data, filter_strikes_near_spot,
         calculate_option_skew, calculate_pcr, calculate_max_pain, get_live_premium,
         final_suggestion_extended, get_dashboard_data,
+        generate_final_suggestion,  # THIS LINE IS NOW INCLUDED
         active_trade, real_signal_history,
         FIXED_ATR_LOW_THRESHOLD, SYMBOL, ATR_PERCENTILE,
         is_market_open_ist,
-        generate_final_suggestion,
         fetch_historical_daily_candles,
         fetch_intraday_data_and_indicators,
         detect_divergence
@@ -438,12 +440,11 @@ def update_dashboard():
     except Exception as e:
         st.error(f"An unexpected error occurred during dashboard update: {e}")
         logging.error(f"[update_dashboard] Exception: {e}", exc_info=True)
-        # Clear UI elements on error to prevent displaying stale/incorrect data
-        st.empty()  # Clears all dynamic content on the main page
-        st.stop()  # Stop further execution to prevent infinite loops on error
+        st.empty()
+        st.stop()
 
     finally:
-        time.sleep(REFRESH_INTERVAL_SECONDS)  # Use the user-controlled refresh interval
+        time.sleep(REFRESH_INTERVAL_SECONDS)
         st.rerun()
 
 
