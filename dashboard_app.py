@@ -1,11 +1,9 @@
 import streamlit as st  # st MUST be imported first for set_page_config
 import time
-import pandas_ta as ta
 import pandas as pd
 import logging
 import sys
 import os
-from typing import Union
 from pandas.api.types import is_scalar
 
 # --- Streamlit UI Configuration (MUST BE THE FIRST STREAMLIT COMMAND) ---
