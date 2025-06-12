@@ -3,15 +3,10 @@ import datetime as dt
 import zoneinfo
 import pandas as pd
 import logging
-import datetime  # Standard datetime module
 import yfinance as yf
-import pandas_ta as ta  # Standard alias for pandas_ta
-import requests  # Keeping if you use it elsewhere
-import gzip, json  # Keeping if you use it elsewhere
+import json  # Keeping if you use it elsewhere
 from twilio.rest import Client
-from datetime import date
 from typing import Union
-
 from nsepython import nsefetch, nse_optionchain_scrapper, index_history
 
 # --- GLOBAL CONFIGURATION AND INITIALIZATION ---

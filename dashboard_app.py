@@ -22,7 +22,7 @@ st.markdown("---")  # Add a separator below the mantra
 if 'logging_setup_complete' not in st.session_state:
     try:
         root_logger = logging.getLogger()
-        root_logger.setLevel(logging.INFO)  # Set to logging.DEBUG in Kuber_smart_12_purense_1.py for detailed bot logs
+        root_logger.setLevel(logging.INFO)  # Set to logging.DEBUG in Kuber_1206_All_V1.py for detailed bot logs
         for handler in root_logger.handlers[:]:
             if isinstance(handler, logging.StreamHandler):
                 root_logger.removeHandler(handler)
@@ -70,7 +70,7 @@ try:
 
 except ImportError as e:
     st.error(
-        f"Error importing bot logic: {e}. Please ensure 'Kuber_smart_12_purense_1.py' is in the same directory and all its dependencies are installed (e.g., pandas_ta, yfinance, nsepython, twilio).")
+        f"Error importing bot logic: {e}. Please ensure 'Kuber_1206_All_V1.py' is in the same directory and all its dependencies are installed (e.g., pandas_ta, yfinance, nsepython, twilio).")
     st.stop()
 except Exception as e:
     st.error(f"An unexpected error occurred during initial Streamlit setup: {e}")
